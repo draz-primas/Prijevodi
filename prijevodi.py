@@ -43,7 +43,7 @@ pritisnime=ImageTk.PhotoImage(file=resource_path("slike/pritisnime.png"))
 prilozirjesenje=ImageTk.PhotoImage(file=resource_path("slike/prilozirjesenje.png"))
 p1=ImageTk.PhotoImage(file=resource_path("slike/p1.png"))
 p2=ImageTk.PhotoImage(file=resource_path("slike/p2.png"))
-
+kreni_img=ImageTk.PhotoImage(file=resource_path("slike/kreni.png"))
 
 
 
@@ -54,7 +54,16 @@ def about():
     messagebox.showinfo('O Prijevodima', 'Program za vježbanje prevođenja rečenica prirodnog jezika na jezik logike prvog reda i obratno.\n Program možete vidjeti na:\n https://github.com/bartolmarin/Prijevodi')
 
 def pomoc():
-    messagebox.showinfo('Pomoć', '0. Očekivani odgovori (pogotovo oni izraženi prirodnim jezikom) samo su jedna mogućnost iskazivanja zadanog logičkog oblika. \n 1. Upišite ime datoteke u koju će se zapisivati vaši odgovori i očekivani odgovori. \n 2. Pritisnite tipku <Enter>. \n 3. Pritiskom gumba odaberite hoćete li prevoditi s prirodnog ili na prirodni jezik.\n 4. Ako ćete prevoditi s prirodnog na jezik logike prvog reda, pogledajte desno kako ćete upisati veznike i kvantifikatore (važno je da oko svake riječi ostanu praznine).\n 5. Pritisnite gumb "PritisniMe".\n 6. Za prihvaćanje vašeg odgovora dovoljno je nakon unosa pritisnuti tipku <Enter>.\n 7. Na kraju pritisnite gumb na dnu lijevo i pritisnite "q" za izlaz iz programa ')
+    messagebox.showinfo('Pomoć',
+'''\
+0. Očekivani odgovori (pogotovo oni izraženi prirodnim jezikom) samo su jedna mogućnost iskazivanja zadanog logičkog oblika.
+1. Upišite ime datoteke u koju će se zapisivati vaši odgovori i očekivani odgovori.
+2. Pritisnite tipku <Enter>.
+3. U izborniku izaberite s kojeg na koji jezik ćete prevoditi ili negirati i pritisnite gumb "kreni"
+4. Ako ćete prevoditi s na jezik logike prvog reda, pogledajte desno kako ćete upisati veznike i kvantifikatore (važno je da oko svake riječi ostanu praznine).
+5. Pritisnite gumb "PritisniMe".
+6. Za prihvaćanje vašeg odgovora dovoljno je nakon unosa pritisnuti tipku <Enter>.
+7. Na kraju pritisnite gumb na dnu lijevo i pritisnite "q" za izlaz iz programa''')
 
 menubar = Menu(prozor, bg="#eff0b9")  
 menubar.add_command(label="Pomoć", command=pomoc)
@@ -101,9 +110,9 @@ oocekivano.grid(row=5 ,column=1)
 #f = open("e.txt", "w") 
 #Otvori ili napravi fajl u koji ćeš upisivati rezultate
 o0=MjestoMoje(prozor, text="Napišite ime fajla u koji želite spremiti rezultate\n (na kraju stitnite <Enter>)", font=13)
-o0.grid(row=2 ,column=0, sticky='w', padx=15)
+o0.grid(row=2 ,column=1, sticky='n', padx=15)
 mojfajl=Entry(prozor,width=20,font=25)
-mojfajl.grid(row=2 ,column=1, sticky='w')
+mojfajl.grid(row=2 ,column=1, sticky='ne')
 
 
 # ===== KRAJ TEKSTA NA PROZORU =====
@@ -112,14 +121,13 @@ mojfajl.grid(row=2 ,column=1, sticky='w')
 
 
 
-#Otvori dva dokumenta iz kojih uzimaš retke
-k = open(resource_path('recenice/kvantificirane.txt'), 'r', encoding="UTF8")#ovo je za .exe fajl koji sprema u /temp da bi mu kvantificirane i obicne.txt bile dostupne!! encoding treba specificirati zbog toga što Windowsi neće moći pročitati ako im nije rečeno
-
-#k = resource_path('kvantificirane.txt')
-sadrzajk=k.read()
-o = open(resource_path('recenice/obicne.txt'), 'r', encoding="UTF8")
-#o = resource_path('obicne.txt') 
-sadrzajo=o.read()
+#Otvori dokumente iz kojih uzimaš retke
+#ovo je za .exe fajl koji sprema u /temp da bi mu kvantificirane i obicne.txt bile dostupne!! encoding treba specificirati zbog toga što Windowsi neće moći pročitati ako im nije rečeno
+imena = [i.replace(".txt", "") for i in os.listdir('recenice/')]
+recenice = [open(resource_path('recenice/' + i + ".txt"), 'r', encoding="UTF8") for i in imena]
+sadrzaji = {imena[i] : recenice[i].read() for i in range(len(imena))} # indeks - ime fajla, vrijednost - sadrzaj fajla
+for i in recenice:
+    i.close()
 
 def brisi():
     mojfajl.grid_forget()
@@ -159,11 +167,7 @@ def smjer(s_jezika,na_jezik):
         global zadatak
         odaberi=randint(1,182)
         
-        if s_jezika == "obicni" and na_jezik == "lpr":
-            lista1=[]
-            lista1=list(map(str,sadrzajo.splitlines()))
-        else:
-            lista1=list(map(str,sadrzajk.splitlines()))
+        lista1 = list(map(str, sadrzaji[s_jezika].splitlines()))
         zadatak=lista1[odaberi]
         ozadatak=MjestoMoje(prozor,text=str(zadatak),font=("Roboto",15), bg="#e7c96b")
         ozadatak.grid(row=3 ,column=1)
@@ -186,7 +190,7 @@ def smjer(s_jezika,na_jezik):
        # odgovor=str(b.get())
         odgovor=str(b.get()).replace("(", " ( ")
 
-        if s_jezika == "obicni" and na_jezik == "lpr":
+        if 'lpr' in na_jezik:
             odgovor=list(map(str,odgovor.split()))
             for j in range(len(odgovor)):
                 if odgovor[j]=='svi':
@@ -214,10 +218,7 @@ def smjer(s_jezika,na_jezik):
         #Upisuje u fajl
         f.write("Vaš odgovor je: "+ "\""+str(odgovor)+"\""+'\n')
         #Traži očekivani odgovor
-        if s_jezika == "obicni" and na_jezik == "lpr":
-            lista2=list(map(str,sadrzajk.splitlines()))
-        else:    
-            lista2=list(map(str,sadrzajo.splitlines()))
+        lista2 = list(map(str, sadrzaji[na_jezik].splitlines()))
         ocekivaniOdgovor=lista2[odaberi]
         oocekivano=MjestoMoje(prozor,text=str(ocekivaniOdgovor),font=("Roboto",18), bg="#e7c96b")
         oocekivano.grid(row=6 ,column=1)
@@ -249,10 +250,6 @@ def smjer(s_jezika,na_jezik):
     prozor.bind('q', lambda event:prozor.destroy())
 
 
-def lprnaobicni():
-    smjer("lpr","obicni")
-def obicninalpr():
-    smjer("obicni","lpr")
 
 
 
@@ -274,14 +271,28 @@ slika.grid(row=1,rowspan=6, column=3, sticky="NS")
 #====== Odabirenje vrste igre ===========
 
 
-lprob=Gumb(prozor, image=p2, cursor="hand1", text="Lpr na obični", font=("Roboto",13), command=lprnaobicni)
-lprob.config(borderwidth=0,  highlightthickness=0, pady=0, padx=0)
-lprob.grid(row=1 ,column=1, pady=20, sticky='W', padx=15)
+s_jezika = StringVar()
+na_jezik = StringVar()
+s_jezika.set('obicne')
+na_jezik.set('obicne')
+drop1 = OptionMenu(prozor, s_jezika, *imena)
+drop2 = OptionMenu(prozor, na_jezik, *imena)
+drop1.grid(row=1, column=0, sticky='E', padx=50)
+drop2.grid(row=2, column=0, sticky='E', padx=50)
+drop1.config(bg="#1F3951", fg="#fcfeab", activebackground="#1F3951", activeforeground="#fcfeab", font=("Roboto",13))
+drop2.config(bg="#1F3951", fg="#fcfeab", activebackground="#1F3951", activeforeground="#fcfeab", font=("Roboto",13))
+drop2["menu"].config(bg="#1F3951", fg="#fcfeab", activebackground="#1F3951", activeforeground="#fcfeab", font=("Roboto",13))
+drop1["menu"].config(bg="#1F3951", fg="#fcfeab", activebackground="#1F3951", activeforeground="#fcfeab", font=("Roboto",13))
 
-oblpr=Gumb(prozor, image=p1, cursor="hand1", text="Obični na Lpr", font=("Roboto",13),command=obicninalpr)
-oblpr.config(borderwidth=0,  highlightthickness=0, pady=0, padx=0)
-oblpr.grid(row=1 ,column=0, sticky='E', padx=15)
+def krenif():
+    smjer(s_jezika.get(), na_jezik.get())
+kreni = Gumb(prozor,image=kreni_img, cursor="hand1", command=krenif)
+kreni.config(borderwidth=0,  highlightthickness=0, pady=0, padx=0)
+kreni.grid(row=1 ,column=1, sticky='W')
+
+o5=MjestoMoje(prozor,text="sa:",font=("Roboto",13))
+o5.grid(row=1 ,column=0, sticky='W')
+o6=MjestoMoje(prozor,text="na:",font=("Roboto",13))
+o6.grid(row=2 ,column=0, sticky='W')
 
 prozor.mainloop()
-k.close()
-o.close()
