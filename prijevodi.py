@@ -39,10 +39,10 @@ prozor.grid_columnconfigure(1, weight=2)
 
 
 # === SLIKE === moraš dodati resource_path() zbog pyinstallera!!! da ga može pronaći
-pritisnime=ImageTk.PhotoImage(file=resource_path("pritisnime.png"))
-prilozirjesenje=ImageTk.PhotoImage(file=resource_path("prilozirjesenje.png"))
-p1=ImageTk.PhotoImage(file=resource_path("p1.png"))
-p2=ImageTk.PhotoImage(file=resource_path("p2.png"))
+pritisnime=ImageTk.PhotoImage(file=resource_path("slike/pritisnime.png"))
+prilozirjesenje=ImageTk.PhotoImage(file=resource_path("slike/prilozirjesenje.png"))
+p1=ImageTk.PhotoImage(file=resource_path("slike/p1.png"))
+p2=ImageTk.PhotoImage(file=resource_path("slike/p2.png"))
 
 
 
@@ -68,7 +68,7 @@ prozor.config(menu=menubar)
 
 
 # ==== TEKST NA PROZORU =====
-naslov = ImageTk.PhotoImage(Image.open(resource_path("naslov.png")))
+naslov = ImageTk.PhotoImage(Image.open(resource_path("slike/naslov.png")))
 naslov1 = MjestoMoje(prozor, image = naslov,borderwidth=0, highlightthickness=0, padx=0, pady=0)
 naslov1.grid(row=0,column=0, columnspan=4,sticky="ns", pady=20)
 
@@ -113,11 +113,11 @@ mojfajl.grid(row=2 ,column=1, sticky='w')
 
 
 #Otvori dva dokumenta iz kojih uzimaš retke
-k = open(resource_path('kvantificirane.txt'), 'r', encoding="UTF8")#ovo je za .exe fajl koji sprema u /temp da bi mu kvantificirane i obicne.txt bile dostupne!! encoding treba specificirati zbog toga što Windowsi neće moći pročitati ako im nije rečeno
+k = open(resource_path('recenice/kvantificirane.txt'), 'r', encoding="UTF8")#ovo je za .exe fajl koji sprema u /temp da bi mu kvantificirane i obicne.txt bile dostupne!! encoding treba specificirati zbog toga što Windowsi neće moći pročitati ako im nije rečeno
 
 #k = resource_path('kvantificirane.txt')
 sadrzajk=k.read()
-o = open(resource_path('obicne.txt'), 'r', encoding="UTF8")
+o = open(resource_path('recenice/obicne.txt'), 'r', encoding="UTF8")
 #o = resource_path('obicne.txt') 
 sadrzajo=o.read()
 
@@ -266,7 +266,7 @@ def obicninalpr():
 
 
 
-kljuc = ImageTk.PhotoImage(Image.open(resource_path("kluc.png")))
+kljuc = ImageTk.PhotoImage(Image.open(resource_path("slike/kljuc.png")))
 slika = MjestoMoje(prozor, image = kljuc,borderwidth=0, pady=0, padx=0, anchor="nw")
 slika.grid(row=1,rowspan=6, column=3, sticky="NS")
 
